@@ -1,12 +1,10 @@
 import * as pdfjsLib from "pdfjs-dist";
 
-export const fileParseController = {};
+export const parseController = {};
 
-fileParseController.handleRequest = async (req, res, next) => {
-  console.log("in controller");
+parseController.handleRequest = async (req, res, next) => {
   const file1 = req.files?.file1?.[0];
   const file2 = req.files?.file2?.[0];
-  console.log("file1: ", file1, "\n file2: ", file2);
 
   if (!file1 || !file2) {
     return res.status(400).json({
@@ -16,8 +14,8 @@ fileParseController.handleRequest = async (req, res, next) => {
 
   try {
     const parsedContent = await Promise.all([
-      fileParseController.parseFile(file1),
-      fileParseController.parseFile(file2),
+      parseController.parseFile(file1),
+      parseController.parseFile(file2),
     ]);
 
     req.fileContents = {
@@ -32,12 +30,12 @@ fileParseController.handleRequest = async (req, res, next) => {
   }
 };
 
-fileParseController.parseFile = async (file) => {
-  const ext = fileParseController.getFileExtension(file.originalname);
+parseController.parseFile = async (file) => {
+  const ext = parseController.getFileExtension(file.originalname);
 
   switch (ext) {
     case "pdf":
-      return await fileParseController.parsePDF(file);
+      return await parseController.parsePDF(file);
     case "md":
     case "py":
     case "ts":
@@ -47,23 +45,35 @@ fileParseController.parseFile = async (file) => {
   }
 };
 
-fileParseController.parsePDF = async (pdfFile) => {
-  const loadingTask = pdfjsLib.getDocument({ data: buffer });
+parseController.parsePDF = async (pdfFile) => {
+  const uint8ArrayData = new Uint8Array(pdfFile.buffer);
+  const loadingTask = pdfjsLib.getDocument({ data: uint8ArrayData });
   const pdfDocument = await loadingTask.promise;
-
-  let fullText = "";
+  const lines = [];
   for (let pageNum = 1; pageNum <= pdfDocument.numPages; pageNum++) {
     const page = await pdfDocument.getPage(pageNum);
     const textContent = await page.getTextContent();
-    console.log("textContent: ", textContent);
 
-    const pageText = textContent.items.map((item) => item.str).join(" ");
-    fullText += pageText + "\n";
+    const lineMap = new Map();
+    textContent.items.forEach((item) => {
+      const y = item.transform[5];
+      const text = item.str;
+      const line = lineMap.get(y) ?? lineMap.set(y, []).get(y);
+      line.push(text);
+    });
+
+    const sortedLines = Array.from(lineMap.entries())
+      .sort((a, b) => b[0] - a[0])
+      .map(([, texts]) => texts.join(" "));
+
+    lines.push(...sortedLines);
   }
 
-  return fullText.trim();
+  const fullText = lines.join("\n");
+
+  return fullText;
 };
 
-fileParseController.getFileExtension = (filename) => {
+parseController.getFileExtension = (filename) => {
   return filename.split(".").pop().toLowerCase();
 };

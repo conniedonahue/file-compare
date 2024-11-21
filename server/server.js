@@ -1,6 +1,7 @@
 import express from "express";
 import multer from "multer";
-import { fileParseController } from "./controllers/fileParseController.js";
+import { parseController } from "./controllers/parseController.js";
+import { compareController } from "./controllers/compareController.js";
 
 const app = express();
 const port = 3000;
@@ -13,13 +14,10 @@ const upload = multer({ storage });
 app.post(
   "/compare/",
   upload.fields([{ name: "file1" }, { name: "file2" }]),
-  (req, res, next) => {
-    console.log("files: ", req.files); // Logs the parsed files and their keys
-    next();
-  },
-  fileParseController.handleRequest, 
+  parseController.handleRequest,
+  compareController.handleRequest,
   (req, res) => {
-    return res.json("done")
+    return res.json("done");
   }
 );
 
