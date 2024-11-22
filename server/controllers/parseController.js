@@ -23,7 +23,7 @@ parseController.handleRequest = async (req, res, next) => {
       file1: parsedContent[0],
       file2: parsedContent[1],
     };
-    // console.log("fileContents: ", req.fileContents);
+    console.log("fileContents: ", req.fileContents);
     next();
   } catch (error) {
     console.error(`Error parsing files. ERROR: ${error}`);
@@ -43,9 +43,9 @@ parseController.checkCache = (fileHash, originalname) => {
 
 parseController.parseFile = async (file) => {
   const { buffer, originalname } = file;
-  // const fileHash = createHash(buffer);
-  // const cachedResult = parseController.checkCache(fileHash, originalname);
-  // if (cachedResult) return cachedResult;
+  const fileHash = createHash(buffer);
+  const cachedResult = parseController.checkCache(fileHash, originalname);
+  if (cachedResult) return cachedResult;
 
   const ext = parseController.getFileExtension(originalname);
 
@@ -54,6 +54,7 @@ parseController.parseFile = async (file) => {
   switch (ext) {
     case "pdf":
       parsedContent = await parseController.parsePDF(buffer);
+      break;
     case "md":
     case "py":
     case "ts":
@@ -63,7 +64,7 @@ parseController.parseFile = async (file) => {
       throw new Error(`Unsupported file type: ${ext}`);
   }
 
-  // parsedFileCache.set(fileHash, parsedContent);
+  parsedFileCache.set(fileHash, parsedContent);
   return parsedContent;
 };
 
