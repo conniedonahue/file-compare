@@ -5,7 +5,6 @@ compareController.handleRequest = (req, res) => {
 
   try {
     const result = compareController.compareFiles(file1, file2);
-    //store result;
     res.status(200).json({
       message: result.isEqual
         ? "No differences detected"
