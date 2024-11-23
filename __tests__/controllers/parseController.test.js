@@ -1,5 +1,5 @@
 import { parseController } from "../../server/controllers/parseController.js";
-import { expect, test } from "vitest";
+import { mockCache } from "../__mocks__/mockCache.js";
 
 test("parseController", () => {
   expect("should cache parsed content", async () => {
@@ -10,7 +10,7 @@ test("parseController", () => {
 
     const result = await parseController.parseFile(mockFile);
     expect(result).toBe("Test content");
-    expect(parsedFileCache.get("mockedHash")).toBe("Test content");
+    expect(mockCache.get("mockedHash")).toBe("Test content");
   });
 
   expect("should detect unsupported file types", async () => {

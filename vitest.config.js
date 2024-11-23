@@ -2,11 +2,12 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   test: {
-    globals: true, // Use globals like `describe` and `it` without imports
-    environment: "node", // Set the test environment
-    include: ["**/__tests__/**/*.js"], // Match test files
+    globals: true,
+    environment: "node",
+    include: ["**/__tests__/**/*.js"],
     coverage: {
-      reporter: ["text", "html"], // Enable coverage reports
+      reporter: ["text", "html"],
     },
+    exclude: "**/__mocks__/**",
   },
 });

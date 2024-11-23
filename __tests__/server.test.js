@@ -1,14 +1,15 @@
 import request from "supertest";
 import app from "../server/server.js";
+import { expect } from "vitest";
 
-describe("Server API tests", () => {
-  it("should return 400 if no files are uploaded", async () => {
+test("Server API tests", () => {
+  expect("should return 400 if no files are uploaded", async () => {
     const response = await request(app).post("/compare/").send();
     expect(response.status).toBe(400);
     expect(response.body.error).toBe("Two files must be uploaded.");
   });
 
-  it("should return 200 and compare files successfully", async () => {
+  expect("should return 200 and compare files successfully", async () => {
     const mockFile1 = Buffer.from("Hello World");
     const mockFile2 = Buffer.from("Hello Universe");
 
@@ -22,9 +23,10 @@ describe("Server API tests", () => {
     expect(response.body.result.differences.length).toBe(1);
   });
 
-  it("should return 404 for non-existent routes", async () => {
+  expect("should return 404 for non-existent routes", async () => {
     const response = await request(app).get("/nonexistent");
     expect(response.status).toBe(404);
     expect(response.body.message).toBe("Route not found");
   });
 });
+
