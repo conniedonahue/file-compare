@@ -4,12 +4,13 @@ import { createHash, parsedFileCache } from "../../db/parsedFileCache.js";
 export const parseController = {};
 
 parseController.handleRequest = async (req, res, next) => {
+  console.log("req: ", req);
   const file1 = req.files?.file1?.[0];
   const file2 = req.files?.file2?.[0];
 
   if (!file1 || !file2) {
     return res.status(400).json({
-      error: `Two files must be uploaded.}`,
+      error: `Two files must be uploaded.`,
     });
   }
 

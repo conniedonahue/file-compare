@@ -14,7 +14,7 @@ vi.mock("../../db/parsedFileCache.js", () => ({
 vi.mock(
   import("../../server/controllers/parseController.js"),
   async (importOriginal) => {
-    const actual = await impoqrtOriginal();
+    const actual = await importOriginal();
     return {
       ...actual,
       parsePDF: vi.fn(async () => {
@@ -38,6 +38,30 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
+test("should return error if requeust has less than 2 files", async () => {
+  const oneFileRequest = {
+    files: {
+      file1: {
+        buffer: Buffer.from("Mock content"),
+        originalname: "mockContent.ts",
+      },
+    },
+  };
+
+  const mockResponse = {
+    status: vi.fn().mockReturnThis(),
+    json: vi.fn(),
+  };
+
+  mockResponse.status(400).json({ error: "Test error message" });
+
+  await parseController.handleRequest(oneFileRequest, mockResponse);
+  expect(mockResponse.status).toHaveBeenCalledWith(400);
+  expect(mockResponse.json).toHaveBeenCalledWith({
+    error: "Two files must be uploaded.",
+  });
+});
+
 test("should cache parsed content and avoid re-parsing on cache hit", async () => {
   const mockFile = {
     buffer: Buffer.from("Test content"),
@@ -45,13 +69,13 @@ test("should cache parsed content and avoid re-parsing on cache hit", async () =
   };
 
   // Mock cache behavior
-  const mockFileHash = "mockFileHash"; // You can simulate hash generation
-  parsedFileCache.has.mockReturnValue(true); // Simulate cache hit
-  parsedFileCache.get.mockReturnValue("Test content");
+  const mockFileHash = "mockFileHash";
+  parsedFileCache.has.mockReturnValue(true);
+  parsedFileCache.get.mockReturnValue("Mock content");
 
   // Expecting the parsed file content to be returned from the cache
   const result = await parseController.parseFile(mockFile);
-  expect(result).toBe("Test content");
+  expect(result).toBe("Mock content");
   expect(parsedFileCache.has).toHaveBeenCalledWith(mockFileHash);
   expect(parsedFileCache.get).toHaveBeenCalledWith(mockFileHash);
 });
