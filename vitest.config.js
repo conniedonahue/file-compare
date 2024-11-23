@@ -7,6 +7,7 @@ export default defineConfig({
     include: ["**/__tests__/**/*.js"],
     coverage: {
       reporter: ["text", "html"],
+      provider: "v8",
     },
     exclude: "**/__mocks__/**",
   },
