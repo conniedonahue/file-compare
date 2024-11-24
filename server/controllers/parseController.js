@@ -1,5 +1,6 @@
 import * as pdfjsLib from "pdfjs-dist";
 import { createHash, parsedFileCache } from "../../db/parsedFileCache.js";
+import { UnsupportedFileTypeError } from "../errors/errors.js";
 
 export const parseController = {};
 
@@ -62,7 +63,7 @@ parseController.parseFile = async (file) => {
       parsedContent = buffer.toString("utf8");
       break;
     default:
-      throw new Error(`Unsupported file type: ${ext}`);
+      throw new UnsupportedFileTypeError(ext);
   }
 
   parsedFileCache.set(fileHash, parsedContent);
