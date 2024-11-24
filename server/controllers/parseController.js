@@ -27,7 +27,8 @@ parseController.handleRequest = async (req, res, next) => {
     next();
   } catch (error) {
     console.error(`Error parsing files. ERROR: ${error}`);
-    res.status(500).json({ error: "Failed to parse files." });
+    next(error);
+    // res.status(500).json({ error: "Failed to parse files." });
   }
 };
 
