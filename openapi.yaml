@@ -1,0 +1,113 @@
+openapi: 3.0.0
+info:
+  title: File Comparison API
+  version: 1.0.0
+  description: An API to compare two uploaded files for differences.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+
+paths:
+  /compare:
+    post:
+      operationId: compareFiles
+      summary: Compare two uploaded files
+      description: Upload two files to check if they are identical or have differences.
+      security: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file1:
+                  type: string
+                  format: binary
+                  description: The first file to compare.
+                file2:
+                  type: string
+                  format: binary
+                  description: The second file to compare.
+      responses:
+        200:
+          description: The comparison result.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Differences detected"
+                  result:
+                    type: object
+                    properties:
+                      isEqual:
+                        type: boolean
+                        example: false
+                      differences:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            line:
+                              type: integer
+                              example: 1
+                            file1:
+                              type: string
+                              example: "Line from file1"
+                            file2:
+                              type: string
+                              example: "Line from file2"
+        400:
+          description: Bad request (e.g., missing files, wrong format).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Two files must be uploaded."
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+        - name
+        - message
+        - status
+      properties:
+        name:
+          type: string
+          description: Name of the error type
+          example: "UnsupportedFileTypeError"
+        message:
+          type: string
+          description: A brief description of the error
+          example: "Unsupported file type: .exe"
+        status:
+          type: integer
+          description: HTTP status code associated with the error
+          example: 400
+      example:
+        UnsupportedFileTypeError:
+          value:
+            name: "UnsupportedFileTypeError"
+            message: "Unsupported file type: .exe"
+            status: 400
+        MissingFilesError:
+          value:
+            name: "MissingFilesError"
+            message: "Two files must be uploaded."
+            status: 400
