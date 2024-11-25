@@ -1,6 +1,9 @@
 import * as pdfjsLib from "pdfjs-dist";
 import { createHash, parsedFileCache } from "../../db/parsedFileCache.js";
-import { UnsupportedFileTypeError } from "../errors/errors.js";
+import {
+  MissingFilesError,
+  UnsupportedFileTypeError,
+} from "../errors/errors.js";
 
 export const parseController = {};
 
@@ -9,9 +12,7 @@ parseController.handleRequest = async (req, res, next) => {
   const file2 = req.files?.file2?.[0];
 
   if (!file1 || !file2) {
-    return res.status(400).json({
-      error: `Two files must be uploaded.`,
-    });
+    return next(new MissingFilesError());
   }
 
   try {

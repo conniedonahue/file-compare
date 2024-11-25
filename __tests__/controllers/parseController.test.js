@@ -1,9 +1,11 @@
 import { describe } from "vitest";
 import { parsedFileCache } from "../../db/parsedFileCache.js";
 import { parseController } from "../../server/controllers/parseController.js";
+import { MissingFilesError } from "../../server/errors/errors.js";
 
 vi.mock("../../db/parsedFileCache.js", () => ({
   parsedFileCache: {
+    name: "mock",
     has: vi.fn(),
     get: vi.fn(),
     set: vi.fn(),
@@ -33,13 +35,12 @@ describe("handleRequest", () => {
       json: vi.fn(),
     };
 
-    mockResponse.status(400).json({ error: "Test error message" });
+    const mockNext = vi.fn();
 
-    await parseController.handleRequest(oneFileRequest, mockResponse);
-    expect(mockResponse.status).toHaveBeenCalledWith(400);
-    expect(mockResponse.json).toHaveBeenCalledWith({
-      error: "Two files must be uploaded.",
-    });
+    await parseController.handleRequest(oneFileRequest, mockResponse, mockNext);
+    expect(mockNext).toHaveBeenCalledWith(expect.any(MissingFilesError));
+    expect(mockResponse.status).not.toHaveBeenCalled();
+    expect(mockResponse.json).not.toHaveBeenCalled();
   });
 });
 
