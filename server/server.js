@@ -29,12 +29,18 @@ app.use((req, res, next) => {
 
 app.use((err, req, res, next) => {
   const status = err.status || 500;
-  res.status(status).json({
+  const errorResponse = {
+    ...err,
     message: err.message || "Internal Server Error",
-    status: status,
-  });
+    code: err.name || "UNKNOWN_ERROR",
+  };
+  return res.status(status).json(errorResponse);
 });
 
-app.listen(port, () => {
-  console.log(`Listening on port: ${port}`);
-});
+if (process.env.NODE_ENV !== "test") {
+  app.listen(3000, () => {
+    console.log("Server running on port 3000");
+  });
+}
+
+export default app;

@@ -1,6 +1,10 @@
+import FileExtensions from "../../constants/validFileExtensions.js";
+
 export class UnsupportedFileTypeError extends Error {
   constructor(extension) {
-    super(`Unsupported file type: ${extension}`);
+    super(
+      `Unsupported file type: ${extension}. List of acceptable file extensions: ${FileExtensions.getFormattedList()}`
+    );
     this.name = "UnsupportedFileTypeError";
     this.status = 400;
   }

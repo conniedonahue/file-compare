@@ -1,4 +1,5 @@
 import * as pdfjsLib from "pdfjs-dist";
+import FileExtensions from "../../constants/validFileExtensions.js";
 import { createHash, parsedFileCache } from "../../db/parsedFileCache.js";
 import {
   MissingFilesError,
@@ -20,7 +21,6 @@ parseController.handleRequest = async (req, res, next) => {
       parseController.parseFile(file1),
       parseController.parseFile(file2),
     ]);
-
     req.fileContents = {
       file1: parsedContent[0],
       file2: parsedContent[1],
@@ -51,18 +51,18 @@ parseController.parseFile = async (file) => {
   if (cachedResult) return cachedResult;
 
   const ext = parseController.getFileExtension(originalname);
+  const category = parseController.getFileCategory(ext);
 
   let parsedContent;
 
-  switch (ext) {
-    case "pdf":
+  switch (category) {
+    case "PDF":
       parsedContent = await parseController.parsePDF(buffer);
       break;
-    case "md":
-    case "py":
-    case "ts":
+    case "TEXT_BASED":
       parsedContent = buffer.toString("utf8");
       break;
+    case "UNSUPPORTED":
     default:
       throw new UnsupportedFileTypeError(ext);
   }
@@ -108,4 +108,18 @@ parseController.parsePDF = async (buffer) => {
 
 parseController.getFileExtension = (filename) => {
   return filename.split(".").pop().toLowerCase();
+};
+
+parseController.getFileCategory = (ext) => {
+  let category;
+
+  if (ext === FileExtensions.PDF) {
+    category = "PDF";
+  } else if (FileExtensions.TEXT_BASED.has(ext)) {
+    category = "TEXT_BASED";
+  } else {
+    category = "UNSUPPORTED";
+  }
+
+  return category;
 };
