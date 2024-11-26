@@ -4,7 +4,7 @@
 
 To run this application in Docker, do the following:
 
-1. _Clone this repo:_ Grab the HTTPS URL from the main page of this repository and clicking the `<> Code` button. Open a Terminal and change the current working directory to where you'd like the cloned repository to be stored. Use following git command: `git clone https://github.com/conniedonahue/file-compare.git`.
+1. _Clone this repo:_ Grab the HTTPS URL from the main page of this repository by clicking the `<> Code` button. Open a Terminal and change the current working directory to where you'd like the cloned repository to be stored. Use following git command: `git clone https://github.com/conniedonahue/file-compare.git`.
 2. _Enter the directory in your terminal:_ `cd file-compare`
 3. _Build the Docker image:_ `docker build -t file-compare-api .` Note: the `-t` flag sets the tag for the image, feel free to replace `file-compare-api` with a different tag (although if you do, make sure to use your replaced name in the following steps).
 4. _Run the Container:_ After building the image, you can run your application with the following command: `docker run -d -p 3000:3000 --rm --name file-compare-api file-compare-api`. The `-d` flag runs the container in detached mode. The `-p flag` maps port `3000` on your local machine to port `3000` inside the Docker container. `--rm` removes the container upon exiting, and `--name` assigns the container its name.
@@ -12,7 +12,7 @@ To run this application in Docker, do the following:
    If you want to use a different local port, modify the port mapping and environment variable like this:
    `docker run -d -p {new local port}:3000 -e PORT=3000 --rm --name file-compare-api file-compare-api`.
 
-5. _Test out the App:_ try comparing 2 files using Postman or by sending curl requests.
+5. _Test out the App:_ try comparing 2 files using Postman or by sending `curl` requests.
 
    Some helpful Docker commands while using the app:
 
@@ -23,7 +23,7 @@ To run this application in Docker, do the following:
 
    NOTE: If you have the repo open in an IDE, the Python files in the `__test-files__` folder may flag some warnings to select an interpreter. If you are in VSCode, you can copy `.vscode/settings.json.example` into your `.vscode/settings.json`.
 
-   Let's try out a few comparisons! I've set up some test files in the `__teset-files__` folder. Here is an comparison of two PDF versions of "Wild Geese" by Mary Oliver:
+   Let's try out a few comparisons! I've set up some test files in the `__test-files__` folder. Here is an comparison of two PDF versions of "Wild Geese" by Mary Oliver:
 
    ```
    curl -X POST \
@@ -92,7 +92,7 @@ To run this application in Docker, do the following:
 
 6. _Find the Docker container-id_: To see a list of your Docker Containers, enter: `docker ps`.
 7. _Close down the docker container_: When you would like to shut down the container, enter the following command into your terminal: `docker stop <container-id>`. You can also close it with the name: `docker stop file-compare-api`.
-8. _Remove the Docker Image_: `docker rmi file-compare-api`
+8. _Remove the Docker Image_: To remove the Docker image, run: `docker rmi file-compare-api`
 
 ## Node instructions
 
@@ -101,11 +101,11 @@ To run this server locally using Node, do the following:
 1. _Clone this repo:_ Grab the HTTPS URL from the main page of this repository and clicking the `<> Code` button. Open a Terminal and change the current working directory to where you'd like the cloned repository to be stored. Use following git command: `git clone https://github.com/conniedonahue/file-compare.git`.
 2. _Open the project in an IDE:_ Find the cloned repo and open it in an IDE like VS Code.
 3. _Run the server:_ Run `npm run start`.
-4. _Test out the app:_ Try out some of the curl requests listed above.
+4. _Test out the app:_ Try out some of the `curl` requests listed above.
 
 ## Design considerations
 
-Here is my first sketch of the design.
+Here is an early sketch of the system design.
 ![System-Design](./assets/images/SiddekoTakeHome.jpg)
 
 ### Functional Requirements
@@ -129,12 +129,12 @@ Here is my first sketch of the design.
   - 10% LRU Cache?
     - .10 \* 2TB = 200GB for PDFs
     - .10 \* 1.6TB = 160GB for text
-    - Too big, lets try 1%
+    - This seems too large, so let's try 1%.
 
 - Idempodent, consistent results
 - PDF ingest: consistent, no partial results
 - Ideally as low latency (under 500ms) as possible
-- Out of Scope: Auth
+- Out of Scope: User Authentication
 
 ### Data Flow
 
@@ -151,7 +151,7 @@ The backend is built in Node/Express using a controller pattern. Express has ver
 
 ### LRU Cache
 
-In order to cut down on the compute time of parsing files, I thought it would be helpful to cache parsed files in an LRU cache. This would be helpful comparing the same file to multiple other files. Based off of the calculations in the Nonfunctional Requirements section, 10% of expected traffic would come to 360GB... which would require a fleet of servers. It might be more realistic to bring this number down to 36GB (1% of total) and adjust strategy based on cache misses. For production, parsed content should be encrypted to prevent unauthorized access.
+In order to cut down on the compute time of parsing files, I thought it would be helpful to cache parsed files in an LRU cache. This would be helpful comparing the same file to multiple other files. Based on the calculations in the Nonfunctional Requirements section, 10% of expected traffic would come to 360GB... which would require a fleet of servers. It might be more realistic to bring this number down to 36GB (1% of total) and adjust strategy based on cache misses. For production, parsed content should be encrypted to prevent unauthorized access.
 
 ### User Database
 
@@ -208,7 +208,6 @@ Out of scope for this project was handling users and authentication. For product
 ### ⚙️ Configuration
 
 - [x] Environment-based port configuration
-- [ ] Add configuration validation
 
 ### 🌟 Potential Features Roadmap
 
