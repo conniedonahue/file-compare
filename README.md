@@ -121,13 +121,14 @@ Here is my first sketch of the design.
 ### Nonfunctional Requirements
 
 - Scalable for high-traffic use, assuming:
+
   - initially scale to 1M requests (2M files) / day
   - est size: text = 1MB/file, PDF = 5MB/file
   - est 20% of requests are for PDFs
-  - (2M * .2 * 5MB) + (2M * .8 * 1MB) = 3.6TB/day
+  - (2M _ .2 _ 5MB) + (2M _ .8 _ 1MB) = 3.6TB/day
   - 10% LRU Cache?
-    - .10 * 2TB = 200GB for PDFs
-    - .10 * 1.6TB = 160GB for text
+    - .10 \* 2TB = 200GB for PDFs
+    - .10 \* 1.6TB = 160GB for text
     - Too big, lets try 1%
 
 - Idempodent, consistent results
@@ -136,6 +137,7 @@ Here is my first sketch of the design.
 - Out of Scope: Auth
 
 ### Data Flow
+
 - Validate files
 - Check cache for parsed file
 - Parse data into string (if not in cache)
@@ -145,15 +147,15 @@ Here is my first sketch of the design.
 
 ### Express Backend
 
-The backend is built in Node/Express using a controller pattern. Express has very handy mechanisms for error handling/JSON parsing, and it also has a rich ecosystem of libraries and middleware (like `express-rate-limit`). 
+The backend is built in Node/Express using a controller pattern. Express has very handy mechanisms for error handling/JSON parsing, and it also has a rich ecosystem of libraries and middleware (like `express-rate-limit`).
 
 ### LRU Cache
 
-In order to cut down on the compute time of parsing files, I thought it would be helpful to cache the parsed files in an LRU cache. This would be helpful comparing the same file to multiple versions. Based off of the calculations in the Nonfunctional Requirements section, this cache would need to be 360GB to account for 10% of expected traffic... which would require a fleet of servers. It might be more realistic to bring this number down to 36GB (1% of total) and adjust strategy based on cache misses. For production, parsed content should be encrypted to prevent unauthorized access.
+In order to cut down on the compute time of parsing files, I thought it would be helpful to cache parsed files in an LRU cache. This would be helpful comparing the same file to multiple other files. Based off of the calculations in the Nonfunctional Requirements section, 10% of expected traffic would come to 360GB... which would require a fleet of servers. It might be more realistic to bring this number down to 36GB (1% of total) and adjust strategy based on cache misses. For production, parsed content should be encrypted to prevent unauthorized access.
 
 ### User Database
 
-Out of scope for this project was handling users and authentication. For production, I would build out a user database that included the history of response objects from past searches. These would be more lightweight and could be used for faster retrievals of previously-entered comparisons.
+Out of scope for this project was handling users and authentication. For production, I would build out a user database that included the history of response objects from past searches. These response objects could be used for faster retrievals of previously-entered comparisons.
 
 ## Production Readiness Checklist
 
@@ -189,6 +191,7 @@ Out of scope for this project was handling users and authentication. For product
 - [x] Error scenario testing
 - [ ] Add performance/load testing
 - [ ] Implement end-to-end testing
+- [ ] Contract testing
 
 ### 📝 Documentation
 
