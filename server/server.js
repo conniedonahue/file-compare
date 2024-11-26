@@ -4,7 +4,7 @@ import { parseController } from "./controllers/parseController.js";
 import { compareController } from "./controllers/compareController.js";
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -38,8 +38,8 @@ app.use((err, req, res, next) => {
 });
 
 if (process.env.NODE_ENV !== "test") {
-  app.listen(3000, () => {
-    console.log("Server running on port 3000");
+  app.listen(port, () => {
+    console.log(`Server running on http://0.0.0.0:${port}`);
   });
 }
 
