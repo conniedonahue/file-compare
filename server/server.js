@@ -2,6 +2,7 @@ import express from "express";
 import multer from "multer";
 import { parseController } from "./controllers/parseController.js";
 import { compareController } from "./controllers/compareController.js";
+import { LimitFileSizeError } from "./errors/errors.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -9,7 +10,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const storage = multer.memoryStorage();
-const upload = multer({ storage });
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 1 * 1024 * 1024,
+  },
+});
 
 app.post(
   "/compare/",
@@ -20,6 +26,13 @@ app.post(
     return res.json("done");
   }
 );
+
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError && err.code === "LIMIT_FILE_SIZE") {
+    return next(new LimitFileSizeError());
+  }
+  next(err);
+});
 
 app.use((req, res, next) => {
   const error = new Error("Route not found");

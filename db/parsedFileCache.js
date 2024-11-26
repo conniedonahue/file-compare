@@ -12,6 +12,11 @@ Settings:
 
 export const parsedFileCache = new LRUCache({
   max: 200_000,
+  maxSize: 2_000, // Set a maximum size in MB
+  sizeCalculation: (value) => {
+    // Estimate size in MB; assuming value is a string or buffer
+    return Math.ceil(Buffer.byteLength(value, "utf8") / (1024 * 1024));
+  },
   ttl: 24 * 60 * 60 * 1000,
 });
 

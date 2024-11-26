@@ -5,7 +5,7 @@ export class UnsupportedFileTypeError extends Error {
     super(
       `Unsupported file type: ${extension}. List of acceptable file extensions: ${FileExtensions.getFormattedList()}`
     );
-    this.name = "UnsupportedFileTypeError";
+    this.code = "UnsupportedFileTypeError";
     this.status = 400;
   }
 }
@@ -13,7 +13,15 @@ export class UnsupportedFileTypeError extends Error {
 export class MissingFilesError extends Error {
   constructor() {
     super("Two files must be uploaded.");
-    this.name = "MissingFilesError";
+    this.code = "MissingFilesError";
+    this.status = 400;
+  }
+}
+
+export class LimitFileSizeError extends Error {
+  constructor() {
+    super("File size is too large. Maximum allowed size is 10MB.");
+    this.code = "LimitFileSizeError";
     this.status = 400;
   }
 }

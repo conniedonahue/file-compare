@@ -127,7 +127,7 @@ The backend is built in Node/Express.
 ### 🚀 Performance
 
 - [x] LRU Caching for file parsing (`parsedFileCache.js`)
-  - Configured for 200K entries
+  - Configured for 200K entries / 100 comparisons
   - 24-hour cache retention
 - [x] Efficient file parsing with minimal memory overhead
 - [ ] Add request logging
