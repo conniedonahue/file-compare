@@ -167,6 +167,26 @@ The backend is built in Node/Express.
 - [ ] Implement comprehensive environment variable support
 - [ ] Add configuration validation
 
+### 🌟 Potential Features Roadmap
+
+- [ ] User Authentication System
+  - User registration
+  - Secure login / OAuth etc.
+- [ ] Results Persistence
+  - Database to store comparison results
+  - Allow users to view comparisons history
+  - Export results (PDF/CSV)
+- [ ] Advanced Comparison Options
+  - Configurable comparison modes (strict/lenient)
+  - Support for more file types
+  - Detailed diff visualization
+- [ ] Collaborative Features
+  - Share comparison results
+  - Add comments to differences
+- [ ] Performance Enhancements
+  - Async file processing
+  - Batch file comparison
+
 ### Next Steps for Production Readiness
 
 1. Implement rate limiting
