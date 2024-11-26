@@ -120,18 +120,17 @@ The backend is built in Node/Express.
 - [x] Error handling implemented in `server.js` middleware
 - [x] Input validation for file uploads
 - [x] File type restrictions in `parseController.js`
-- [ ] Implement rate limiting
+- [x] Implement rate limiting
 - [ ] Add HTTPS support
 - [ ] Add security headers
 
 ### 🚀 Performance
 
 - [x] LRU Caching for file parsing (`parsedFileCache.js`)
-  - Configured for 200K entries / 100 comparisons
+  - Configured for 200K entries (100 comparisons) or 2.5MB max
   - 24-hour cache retention
 - [x] Efficient file parsing with minimal memory overhead
-- [ ] Add request logging
-- [ ] Implement request timing metrics
+- [ ] Add request logging / timing metrics
 
 ### 📊 Reliability
 
@@ -139,7 +138,7 @@ The backend is built in Node/Express.
 - [x] Detailed error responses in OpenAPI spec
 - [x] Containerized with Docker
 - [x] Graceful error routing in `server.js`
-- [ ] Implement application-level health check endpoint
+- [ ] Implement `/health` check endpoint
 
 ### 🧪 Testing
 
@@ -157,14 +156,13 @@ The backend is built in Node/Express.
 
 ### 🔍 Observability
 
-- [ ] Implement structured logging
+- [ ] Implement logging
 - [ ] Add request tracing
 - [ ] Configure application monitoring
 
 ### ⚙️ Configuration
 
 - [x] Environment-based port configuration
-- [ ] Implement comprehensive environment variable support
 - [ ] Add configuration validation
 
 ### 🌟 Potential Features Roadmap
@@ -179,6 +177,7 @@ The backend is built in Node/Express.
 - [ ] Advanced Comparison Options
   - Configurable comparison modes (strict/lenient)
   - Support for more file types
+  - Support for non-English language
   - Detailed diff visualization
 - [ ] Collaborative Features
   - Share comparison results
@@ -189,8 +188,8 @@ The backend is built in Node/Express.
 
 ### Next Steps for Production Readiness
 
-1. Implement rate limiting
-2. Add comprehensive logging
-3. Set up application monitoring
-4. Configure HTTPS
-5. Perform security audit
+1. Add logging
+2. Set up application monitoring
+3. Configure HTTPS
+4. Set up persistent database for Users / Results
+5. Deploy Cache in distributed system

@@ -1,5 +1,6 @@
 import express from "express";
 import multer from "multer";
+import rateLimit from "express-rate-limit";
 import { parseController } from "./controllers/parseController.js";
 import { compareController } from "./controllers/compareController.js";
 import { LimitFileSizeError } from "./errors/errors.js";
@@ -17,8 +18,23 @@ const upload = multer({
   },
 });
 
+// Rate limiter
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 mins
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    status: 429,
+    message: "Too many requests, please try again later.",
+  },
+});
+
+app.use(apiLimiter);
+
 app.post(
   "/compare/",
+  apiLimiter,
   upload.fields([{ name: "file1" }, { name: "file2" }]),
   parseController.handleRequest,
   compareController.handleRequest,
