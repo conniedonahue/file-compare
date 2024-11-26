@@ -1,4 +1,5 @@
 import FileExtensions from "../../constants/validFileExtensions.js";
+import { MAX_FILE_SIZE } from "../../constants/maxFileSize.js";
 
 export class UnsupportedFileTypeError extends Error {
   constructor(extension) {
@@ -20,7 +21,9 @@ export class MissingFilesError extends Error {
 
 export class LimitFileSizeError extends Error {
   constructor() {
-    super("File size is too large. Maximum allowed size is 10MB.");
+    super(
+      `File size is too large. Maximum allowed size is ${MAX_FILE_SIZE}MB.`
+    );
     this.code = "LimitFileSizeError";
     this.status = 400;
   }

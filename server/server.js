@@ -4,6 +4,7 @@ import rateLimit from "express-rate-limit";
 import { parseController } from "./controllers/parseController.js";
 import { compareController } from "./controllers/compareController.js";
 import { LimitFileSizeError } from "./errors/errors.js";
+import { MAX_FILE_SIZE } from "../constants/maxFileSize.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -14,7 +15,7 @@ const storage = multer.memoryStorage();
 const upload = multer({
   storage,
   limits: {
-    fileSize: 10 * 1024 * 1024,
+    fileSize: MAX_FILE_SIZE * 1024 * 1024,
   },
 });
 
