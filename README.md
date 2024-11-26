@@ -23,7 +23,7 @@ To run this application in Docker, do the following:
 
    NOTE: If you have the repo open in an IDE, the Python files in the `__test-files__` folder may flag some warnings to select an interpreter. If you are in VSCode, you can copy `.vscode/settings.json.example` into your `.vscode/settings.json`.
 
-   Let's try out a few comparisons! I've set up some Here is an example:
+   Let's try out a few comparisons! I've set up some test files in the `__teset-files__` folder. Here is an comparison of two PDF versions of "Wild Geese" by Mary Oliver:
 
    ```
    curl -X POST \
