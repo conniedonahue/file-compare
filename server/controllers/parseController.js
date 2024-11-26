@@ -8,6 +8,16 @@ import {
 
 export const parseController = {};
 
+/**
+ * Handles parsing of uploaded files.
+ *
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express middleware next function.
+ *
+ * @throws {MissingFilesError} If one or both files are missing.
+ */
+
 parseController.handleRequest = async (req, res, next) => {
   const file1 = req.files?.file1?.[0];
   const file2 = req.files?.file2?.[0];
@@ -25,14 +35,20 @@ parseController.handleRequest = async (req, res, next) => {
       file1: parsedContent[0],
       file2: parsedContent[1],
     };
-    console.log("fileContents: ", req.fileContents);
     next();
   } catch (error) {
     console.error(`Error parsing files. ERROR: ${error}`);
     next(error);
-    // res.status(500).json({ error: "Failed to parse files." });
   }
 };
+
+/**
+ * Checks if a file's parsed content is cached.
+ *
+ * @param {string} fileHash - Hash of the file contents.
+ * @param {string} originalname - Original name of the file.
+ * @returns {string|null} Cached parsed content, or `null` if not in cache.
+ */
 
 parseController.checkCache = (fileHash, originalname) => {
   if (parsedFileCache.has(fileHash)) {
@@ -43,6 +59,16 @@ parseController.checkCache = (fileHash, originalname) => {
     return null;
   }
 };
+
+/**
+ * Parses a file and caches the result if not already cached.
+ *
+ * @param {Object} file - The uploaded file.
+ * @param {Buffer} file.buffer - File content as a buffer.
+ * @param {string} file.originalname - Original name of the file.
+ * @returns {string} Parsed file content.
+ * @throws {UnsupportedFileTypeError} If the file type is unsupported.
+ */
 
 parseController.parseFile = async (file) => {
   const { buffer, originalname } = file;
@@ -71,6 +97,14 @@ parseController.parseFile = async (file) => {
   return parsedContent;
 };
 
+/**
+ * Extracts text content from a PDF buffer using pdfjs.
+ * Pdf is processed in chunks (pages).
+ *
+ * @param {Buffer} buffer - The PDF file buffer.
+ * @returns {string} Parsed text content of the PDF with new lines delineated by '\n'
+ * @throws {Error} If text extraction fails.
+ */
 parseController.parsePDF = async (buffer) => {
   const uint8ArrayData = new Uint8Array(buffer);
   const loadingTask = pdfjsLib.getDocument({ data: uint8ArrayData });
@@ -106,10 +140,23 @@ parseController.parsePDF = async (buffer) => {
   }
 };
 
+/**
+ * Extracts the file extension from a filename.
+ *
+ * @param {string} filename - The name of the file.
+ * @returns {string} The file extension in lowercase ('ts', 'pdf', etc).
+ */
+
 parseController.getFileExtension = (filename) => {
   return filename.split(".").pop().toLowerCase();
 };
 
+/**
+ * Categorizes a file based on its extension. Determines parsing method.
+ *
+ * @param {string} ext - The file extension.
+ * @returns {string} The category of the file (`PDF`, `TEXT_BASED`, or `UNSUPPORTED`).
+ */
 parseController.getFileCategory = (ext) => {
   let category;
 
