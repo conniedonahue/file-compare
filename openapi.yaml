@@ -3,6 +3,7 @@ info:
   title: File Comparison API
   version: 1.0.0
   description: An API to compare two uploaded files for differences.
+    Maximum file size per upload is 10MB. Multiple requests are rate-limited to 100 requests per 15 minutes.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -73,6 +74,19 @@ paths:
                   message:
                     type: string
                     example: "Two files must be uploaded."
+        429:
+          description: Too many requests. Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 429
+                  message:
+                    type: string
+                    example: "Too many requests, please try again later."
         500:
           description: Internal server error.
           content:
@@ -84,11 +98,11 @@ components:
     Error:
       type: object
       required:
-        - name
+        - code
         - message
         - status
       properties:
-        name:
+        code:
           type: string
           description: Name of the error type
           example: "UnsupportedFileTypeError"
@@ -103,11 +117,16 @@ components:
       example:
         UnsupportedFileTypeError:
           value:
-            name: "UnsupportedFileTypeError"
+            code: "UnsupportedFileTypeError"
             message: "Unsupported file type: .exe"
             status: 400
         MissingFilesError:
           value:
-            name: "MissingFilesError"
+            code: "MissingFilesError"
             message: "Two files must be uploaded."
+            status: 400
+        LimitFileSizeError:
+          value:
+            code: "LimitFileSizeError"
+            message: "File size is too large. Maximum allowed size is 10MB."
             status: 400

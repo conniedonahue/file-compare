@@ -105,13 +105,55 @@ To run this server locally using Node, do the following:
 
 ## Design considerations
 
-### Database
+Here is my first sketch of the design.
+![System-Design](./assets/images/SiddekoTakeHome.jpg)
 
-### Backend
+### Functional Requirements
 
-The backend is built in Node/Express.
+- Compare differences of two files
+- Possible extensions:
+  - .md
+  - .py
+  - .ts
+  - .pdf
+- Provide data structure that allows users to parse differences
 
-## PROMPT: Receipt Processor
+### Nonfunctional Requirements
+
+- Scalable for high-traffic use, assuming:
+  - initially scale to 1M requests (2M files) / day
+  - est size: text = 1MB/file, PDF = 5MB/file
+  - est 20% of requests are for PDFs
+  - (2M * .2 * 5MB) + (2M * .8 * 1MB) = 3.6TB/day
+  - 10% LRU Cache?
+    - .10 * 2TB = 200GB for PDFs
+    - .10 * 1.6TB = 160GB for text
+    - Too big, lets try 1%
+
+- Idempodent, consistent results
+- PDF ingest: consistent, no partial results
+- Ideally as low latency (under 500ms) as possible
+- Out of Scope: Auth
+
+### Data Flow
+- Validate files
+- Check cache for parsed file
+- Parse data into string (if not in cache)
+- Compare files line by line, populating output object
+- Store parsed files in Cache
+- Return output object
+
+### Express Backend
+
+The backend is built in Node/Express using a controller pattern. Express has very handy mechanisms for error handling/JSON parsing, and it also has a rich ecosystem of libraries and middleware (like `express-rate-limit`). 
+
+### LRU Cache
+
+In order to cut down on the compute time of parsing files, I thought it would be helpful to cache the parsed files in an LRU cache. This would be helpful comparing the same file to multiple versions. Based off of the calculations in the Nonfunctional Requirements section, this cache would need to be 360GB to account for 10% of expected traffic... which would require a fleet of servers. It might be more realistic to bring this number down to 36GB (1% of total) and adjust strategy based on cache misses. For production, parsed content should be encrypted to prevent unauthorized access.
+
+### User Database
+
+Out of scope for this project was handling users and authentication. For production, I would build out a user database that included the history of response objects from past searches. These would be more lightweight and could be used for faster retrievals of previously-entered comparisons.
 
 ## Production Readiness Checklist
 
@@ -185,6 +227,7 @@ The backend is built in Node/Express.
 - [ ] Performance Enhancements
   - Async file processing
   - Batch file comparison
+- [ ] Put LRU Cache in Distributed System
 
 ### Next Steps for Production Readiness
 
@@ -192,4 +235,4 @@ The backend is built in Node/Express.
 2. Set up application monitoring
 3. Configure HTTPS
 4. Set up persistent database for Users / Results
-5. Deploy Cache in distributed system
+5. Tackle non-English characters
