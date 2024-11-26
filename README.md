@@ -67,6 +67,28 @@ This should return a JSON object like this:
 }
 ```
 
+You can test the other files in this project's `__test-files__` by running:
+
+```
+curl -X POST \
+  -F "file1=@__test-files__/text/car_1.py" \
+  -F "file2=@__test-files__/text/car_2.py" \
+  http://localhost:3000/compare/
+```
+
+```
+curl -X POST \
+  -F "file1=@__test-files__/text/model1.ts" \
+  -F "file2=@__test-files__/text/model2.ts" \
+  http://localhost:3000/compare/
+```
+
+```
+curl -X POST \
+  -F "file1=@__test-files__/text/WDC.md" \
+  -F "file2=@__test-files__/text/WDC-copy.md" \
+  http://localhost:3000/compare/
+```
 
 6. _Find the Docker container-id_: To see a list of your Docker Containers, enter: `docker ps`.
 7. _Close down the docker container_: When you would like to shut down the container, enter the following command into your terminal: `docker stop <container-id>`. You can also close it with the name: `docker stop file-compare-api`.
@@ -85,16 +107,70 @@ To run this server locally using Node, do the following:
 
 ### Database
 
-This receipt processor stores its ticket information in memory. I decided to store it in a Map, `receiptDatabase`, which could port nicely to a key-value database like DynamoDb. The receiptDatabase follows: KEY: `receiptId`, VALUE: `{points: <points>, receipt: <receipt>}`. The Map enables constant lookup by `receiptId`.
-
-I decided it might be wise to hold onto the receipt and store this in the database, although in a larger ecosystem this might be redundant and we could instead optimize this service to only store `receiptId`s and `points`.
-
 ### Backend
 
 The backend is built in Node/Express.
 
-- Input validation: I decided to make the use a middleware pattern to validate the Receipts. With more time, I would have either created a Receipt class or used TypeScript.
-- The POST request generates a `receiptId` and then sends it back to the user while the backend continues to calculate the point totals with `calculatePoints`.
-- The `calculatePoints` could benefit with a bit more fault tolerance/retry capabilities.
-
 ## PROMPT: Receipt Processor
+
+## Production Readiness Checklist
+
+### 🔒 Security
+
+- [x] Error handling implemented in `server.js` middleware
+- [x] Input validation for file uploads
+- [x] File type restrictions in `parseController.js`
+- [ ] Implement rate limiting
+- [ ] Add HTTPS support
+- [ ] Add security headers
+
+### 🚀 Performance
+
+- [x] LRU Caching for file parsing (`parsedFileCache.js`)
+  - Configured for 200K entries
+  - 24-hour cache retention
+- [x] Efficient file parsing with minimal memory overhead
+- [ ] Add request logging
+- [ ] Implement request timing metrics
+
+### 📊 Reliability
+
+- [x] Comprehensive error handling
+- [x] Detailed error responses in OpenAPI spec
+- [x] Containerized with Docker
+- [x] Graceful error routing in `server.js`
+- [ ] Implement application-level health check endpoint
+
+### 🧪 Testing
+
+- [x] Unit tests for controllers
+- [x] Integration tests for API endpoints
+- [x] Error scenario testing
+- [ ] Add performance/load testing
+- [ ] Implement end-to-end testing
+
+### 📝 Documentation
+
+- [x] OpenAPI specification
+- [x] Detailed README
+- [ ] Add performance and scaling recommendations
+
+### 🔍 Observability
+
+- [ ] Implement structured logging
+- [ ] Add request tracing
+- [ ] Configure application monitoring
+
+### ⚙️ Configuration
+
+- [x] Environment-based port configuration
+- [ ] Implement comprehensive environment variable support
+- [ ] Add configuration validation
+
+### Next Steps for Production Readiness
+
+1. Implement rate limiting
+2. Add comprehensive logging
+3. Set up application monitoring
+4. Configure HTTPS
+5. Perform security audit
